@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ConvoExport</string>
+    <string name="create_file_button_text">Create File</string>
+</resources>
