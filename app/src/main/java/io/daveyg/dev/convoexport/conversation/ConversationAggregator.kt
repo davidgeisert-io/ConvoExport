@@ -2,13 +2,13 @@ package io.daveyg.dev.convoexport.conversation
 
 import android.content.ContentResolver
 
-class ConversationAggregator(contextResolver: ContentResolver) {
+class ConversationAggregator(contentResolver: ContentResolver) {
     val smsLoader: IMessageLoader
     val mmsLoader: IMessageLoader
 
     init {
-        smsLoader = SmsLoader(contextResolver)
-        mmsLoader = MmsLoader(contextResolver)
+        smsLoader = SmsLoader(contentResolver)
+        mmsLoader = MmsLoader(contentResolver)
     }
 
 
