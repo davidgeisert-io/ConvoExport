@@ -3,6 +3,9 @@ package io.daveyg.dev.convoexport.conversation
 import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class SmsLoader(var contentResolver: ContentResolver) : IMessageLoader {
 
@@ -15,13 +18,14 @@ class SmsLoader(var contentResolver: ContentResolver) : IMessageLoader {
                 val addressIndex : Int = cursor.getColumnIndex("address")
                 val subjectIndex : Int = cursor.getColumnIndex("subject")
                 val bodyIndex: Int = cursor.getColumnIndex("body")
+                val dateIndex: Int = cursor.getColumnIndex("date")
 
                 do {
                     val message : SmsMessage = SmsMessage(cursor.getInt(threadIdIndex))
                     message.address = cursor.getString(addressIndex)
                     message.subject = cursor.getString(subjectIndex)
                     message.body = cursor.getString(bodyIndex)
-
+                    message.date = LocalDateTime.ofInstant(Instant.ofEpochMilli(cursor.getLong(dateIndex)), ZoneOffset.systemDefault())
                     messages.add(message)
                 } while (cursor.moveToNext())
             }

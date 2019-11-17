@@ -1,6 +1,10 @@
 package io.daveyg.dev.convoexport.conversation
 
+import java.time.LocalDateTime
+
 class SmsMessage(override val threadId: Int) : IMessage {
+
+    override var date: LocalDateTime? = null
 
     override var address: String = ""
 

@@ -1,6 +1,7 @@
 package io.daveyg.dev.convoexport.conversation
 
 import android.content.ContentResolver
+import java.util.stream.Collectors
 
 class ConversationAggregator(contentResolver: ContentResolver) {
     val smsLoader: IMessageLoader
@@ -16,6 +17,16 @@ class ConversationAggregator(contentResolver: ContentResolver) {
         val smsMessages : List<IMessage> = smsLoader.loadMessages()
         val mmsMessages : List<IMessage> = mmsLoader.loadMessages()
 
-        return emptyList()
+        //TODO: Sort-by date
+        val smsThreadGroup : Map<Int, List<IMessage>> = smsMessages.stream()
+            .collect(Collectors.groupingBy(IMessage::threadId))
+
+        return smsThreadGroup.keys.stream()
+            .map { id ->
+                val c : Conversation = Conversation(id)
+                c.messages = smsThreadGroup.getOrDefault(id, emptyList())
+                c
+            }
+            .collect(Collectors.toList())
     }
 }
