@@ -13,20 +13,32 @@ class ConversationAggregator(contentResolver: ContentResolver) {
     }
 
 
-    fun AggregateAll(): List<Conversation>{
-        val smsMessages : List<IMessage> = smsLoader.loadMessages()
-        val mmsMessages : List<IMessage> = mmsLoader.loadMessages()
+    fun aggregateAll(): List<Conversation> {
+        val allMessages = mutableListOf<IMessage>()
+        allMessages.addAll(smsLoader.loadMessages())
+        allMessages.addAll(mmsLoader.loadMessages())
 
-        //TODO: Sort-by date
-        val smsThreadGroup : Map<Int, List<IMessage>> = smsMessages.stream()
+        allMessages.sortByDescending {
+            it.date
+        }
+
+        val threadGroup: Map<Int, List<IMessage>> = allMessages.stream()
             .collect(Collectors.groupingBy(IMessage::threadId))
 
-        return smsThreadGroup.keys.stream()
-            .map { id ->
-                val c : Conversation = Conversation(id)
-                c.messages = smsThreadGroup.getOrDefault(id, emptyList())
-                c
-            }
-            .collect(Collectors.toList())
+        val allConversations = mutableListOf<Conversation>()
+        for (k in threadGroup.keys) {
+            val messages = threadGroup.getOrDefault(k, emptyList())
+            val c: Conversation = Conversation(k)
+            c.messages = messages
+            c.lastActivity = messages.maxBy { it.threadId }?.date
+            c.displayTitle = getDisplayTitleFromMessages(messages)
+
+            allConversations.add(c)
+        }
+        return allConversations
+    }
+
+    private fun getDisplayTitleFromMessages(messages: List<IMessage>) : String {
+        return messages.stream().map { it.name }.distinct().collect(Collectors.joining(", "))
     }
 }

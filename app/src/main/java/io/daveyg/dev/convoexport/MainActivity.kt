@@ -1,20 +1,12 @@
 package io.daveyg.dev.convoexport
 
-import android.content.ContentResolver
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.daveyg.dev.convoexport.conversation.Conversation
 import io.daveyg.dev.convoexport.conversation.ConversationAggregator
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadConversationsIntoListView(){
         val conversationAggregator : ConversationAggregator = ConversationAggregator(contentResolver)
-        val conversations : List<Conversation> = conversationAggregator.AggregateAll()
+        val conversations : List<Conversation> = conversationAggregator.aggregateAll()
         //TODO: Load conversations Into ListView
     }
 
