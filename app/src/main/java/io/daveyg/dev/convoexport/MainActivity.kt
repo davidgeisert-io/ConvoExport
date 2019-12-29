@@ -7,6 +7,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.daveyg.dev.convoexport.conversation.Conversation
 import io.daveyg.dev.convoexport.conversation.ConversationAggregator
+import java.util.stream.Collector
+import java.util.stream.Collectors
 
 
 class MainActivity : AppCompatActivity() {
@@ -16,13 +18,27 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if(ContextCompat.checkSelfPermission(baseContext, "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf("android.permission.READ_SMS"), REQUEST_CODE_ASK_PERMISSIONS)
+        val permissionsNotGranted : Array<String> = permissionsNotGranted()
+        if(permissionsNotGranted.isNotEmpty()){
+            ActivityCompat.requestPermissions(this, permissionsNotGranted, REQUEST_CODE_ASK_PERMISSIONS)
         }
 
         loadConversationsIntoListView()
     }
 
+    private fun permissionsNotGranted() : Array<String>{
+        val permissionsToCheck = mutableListOf(
+            "android.permission.READ_SMS",
+            "android.permission.READ_CONTACTS",
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+        )
+
+        return permissionsToCheck.stream()
+            .filter{ ContextCompat.checkSelfPermission(baseContext, it) != PackageManager.PERMISSION_GRANTED }
+            .toArray<String> { length -> arrayOfNulls(length)}
+
+    }
 
     private fun loadConversationsIntoListView(){
         val conversationAggregator : ConversationAggregator = ConversationAggregator(contentResolver)
